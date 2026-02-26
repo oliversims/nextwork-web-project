@@ -1,0 +1,31 @@
+# The version of the AppSpec file format (0.0 is the current version)
+version: 0.0
+# The operating system of the target instance
+os: linux
+
+# Defines the files to be copied from the build artifact to the instance
+files:
+  # The location of the compiled application in the artifact
+  - source: /target/nextwork-web-project.war
+    # The directory on the EC2 instance where the application should be placed
+    destination: /usr/share/tomcat/webapps/
+
+# Defines specific scripts (hooks) to run at different stages of the deployment
+hooks:
+  # Runs before the new version of the application is installed
+  BeforeInstall:
+    - location: scripts/install_dependencies.sh
+      timeout: 300 # Maximum time allowed for the script to run (in seconds)
+      runas: root # Execute the script with root (administrator) privileges
+  
+  # Runs to start the application after it has been installed
+  ApplicationStart:
+    - location: scripts/start_server.sh
+      timeout: 300
+      runas: root
+  
+  # Runs to stop the currently running application before a new deployment begins
+  ApplicationStop:
+    - location: scripts/stop_server.sh
+      timeout: 300
+      runas: root
