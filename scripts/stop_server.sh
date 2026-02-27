@@ -1,9 +1,17 @@
 #!/bin/bash
-# Add this at the top of your script to make it exit immediately if any command fails
-set -e
 
-# Your intentional error
-sudo systemctll stop httpd.service  # Misspelled command will now cause script to exit with non-zero status
+# Check if the Apache HTTP Server (httpd) process is currently running
+isExistApp="$(pgrep httpd)"
 
-# To be extra sure, we can also add an explicit exit code
-exit 1
+# Only stop Apache if it is actually running (avoids errors if it's already stopped)
+if [[ -n $isExistApp ]]; then
+    sudo systemctl stop httpd.service
+fi
+
+# Check if the Tomcat process is currently running
+isExistApp="$(pgrep tomcat)"
+
+# Only stop Tomcat if it is actually running (avoids errors if it's already stopped)
+if [[ -n $isExistApp ]]; then
+    sudo systemctl stop tomcat.service
+fi
